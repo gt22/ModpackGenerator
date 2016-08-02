@@ -12,7 +12,7 @@ import com.gt22.modpackgen.Const;
 public class MainFrame extends JFrame
 {
 	private MainPanel mainpanel;
-	public JFileChooser iconchooser, descchooser;
+	public JFileChooser iconchooser, descchooser, mpchooser;
 	public MainFrame()
 	{
 		setSize(Const.startwidth, Const.startheight);
@@ -29,6 +29,8 @@ public class MainFrame extends JFrame
 		add(mainpanel = new MainPanel(this), BorderLayout.CENTER);
 		iconchooser = new JFileChooser(new File("."));
 		descchooser = new JFileChooser(new File("."));
+		mpchooser = new JFileChooser(new File("."));
+		mpchooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		iconchooser.setFileFilter(new FileFilter()
 		{
 			
@@ -80,7 +82,18 @@ public class MainFrame extends JFrame
 					mainpanel.setDesc(descchooser.getSelectedFile());
 				}
 			}
-		});	
+		});
+		mpchooser.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if(e.getActionCommand().equals("ApproveSelection"))
+				{
+					mainpanel.setMpdir(mpchooser.getSelectedFile());
+				}
+			}
+		});
 	}
 	
 	public void open(JFileChooser c)

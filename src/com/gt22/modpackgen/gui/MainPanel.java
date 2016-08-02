@@ -11,19 +11,22 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import com.gt22.modpackgen.FileUtils;
 import com.gt22.modpackgen.Generator;
 
 public class MainPanel extends PanelBase
 {
 	private static final String[] mcversions = new String[] {"1.7.10", "1.8", "1.8.9", "1.9", "1.9.4", "1.10", "1.10.2"};
-	private JLabel id, name, ver, mcver, icon, descpath, errors;
+	private JLabel id, name, ver, mcver, icon, descpath, modpath, errors;
 	private JTextField nametxt, vertxt, idtxt;
 	private JComboBox<String> mcvertxt;
-	private JButton chooseIcon, chooseDesc, generate;
-	private File desc, iconf;
+	private JCheckBox useScript;
+	private JButton chooseIcon, chooseDesc, chooseMinecraft, generate;
+	private File desc, iconf, mpdir;
 	public MainPanel(MainFrame instance)
 	{
 		initComponents();
@@ -44,6 +47,9 @@ public class MainPanel extends PanelBase
 		xadd(icon = new JLabel(), 1, 4);
 		xadd(chooseDesc = new JButton("Choose description"), 0, 5);
 		xadd(descpath = new JLabel(), 1, 5);
+		xadd(chooseMinecraft = new JButton("Choose modpack forled"), 0, 6);
+		xadd(modpath = new JLabel(), 1, 6);
+		xadd(useScript = new JCheckBox("Use minetweaker scripts"), 0, 7);
 		icon.setPreferredSize(new Dimension(126, 126));
 		gc.weighty = 10;
 		gc.anchor = GridBagConstraints.SOUTHWEST;
@@ -69,6 +75,14 @@ public class MainPanel extends PanelBase
 			public void actionPerformed(ActionEvent e)
 			{
 				instance.open(instance.descchooser);
+			}
+		});
+		chooseMinecraft.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				instance.open(instance.mpchooser);
 			}
 		});
 		generate.addActionListener(new ActionListener()
@@ -130,9 +144,14 @@ public class MainPanel extends PanelBase
 			errors.setText("Select description file");
 			return;
 		}
+		if(!FileUtils.containsFile(mpdir, "mods") || !FileUtils.containsFile(mpdir, "config") || useScript.isSelected() && !FileUtils.containsFile(mpdir, "scripts"))
+		{
+			errors.setText("Invalid modpack folder");
+			return;
+		}
 		try
 		{
-			Generator.generate(idtxt.getText(), nametxt.getText(), vertxt.getText(), (String) mcvertxt.getSelectedItem(), iconf, desc);
+			Generator.generate(idtxt.getText(), nametxt.getText(), vertxt.getText(), (String) mcvertxt.getSelectedItem(), iconf, desc, mpdir, useScript.isSelected());
 		}
 		catch (IOException e)
 		{
@@ -166,5 +185,11 @@ public class MainPanel extends PanelBase
 	{
 		this.desc = desc;
 		descpath.setText(desc.getAbsolutePath());
+	}
+	
+	public void setMpdir(File mpdir)
+	{
+		this.mpdir = mpdir;
+		modpath.setText(mpdir.getAbsolutePath());
 	}
 }
