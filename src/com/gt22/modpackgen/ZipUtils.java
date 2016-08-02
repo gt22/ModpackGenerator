@@ -36,7 +36,6 @@ public class ZipUtils
 
 			for (String file : this.fileList)
 			{
-				System.out.println("File Added : " + file);
 				ZipEntry ze = new ZipEntry(file);
 				zos.putNextEntry(ze);
 				try
@@ -55,7 +54,6 @@ public class ZipUtils
 			}
 
 			zos.closeEntry();
-			System.out.println("Folder successfully compressed");
 
 		}
 		catch (IOException ex)
